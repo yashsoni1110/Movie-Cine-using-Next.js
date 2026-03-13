@@ -1,0 +1,56 @@
+const BASE_URL = 'https://api.themoviedb.org/3';
+
+// Use Bearer token for server-side calls (more secure, modern approach)
+const getHeaders = () => ({
+  Authorization: `Bearer ${process.env.TMDB_BEARER_TOKEN}`,
+  'Content-Type': 'application/json',
+});
+
+export const fetchPopularMovies = async (page = 1) => {
+  const response = await fetch(
+    `${BASE_URL}/movie/popular?language=en-US&page=${page}`,
+    {
+      headers: getHeaders(),
+      next: { revalidate: 300 }, // Cache for 5 minutes (ISR)
+    }
+  );
+  if (!response.ok) throw new Error('Failed to fetch popular movies');
+  return response.json();
+};
+
+export const searchMovies = async (query, page = 1) => {
+  if (!query) return { results: [], total_pages: 0 };
+  const response = await fetch(
+    `${BASE_URL}/search/movie?language=en-US&query=${encodeURIComponent(query)}&page=${page}`,
+    { headers: getHeaders() }
+  );
+  if (!response.ok) throw new Error('Failed to search movies');
+  return response.json();
+};
+
+export const fetchMovieDetails = async (id) => {
+  const detailsRes = await fetch(
+    `${BASE_URL}/movie/${id}?append_to_response=credits`,
+    { headers: getHeaders(), next: { revalidate: 3600 } }
+  );
+  if (!detailsRes.ok) throw new Error('Failed to fetch movie details');
+  const details = await detailsRes.json();
+
+  try {
+    const [usVideosRes, mVideosRes] = await Promise.all([
+      fetch(`${BASE_URL}/movie/${id}/videos?language=en-US`, { headers: getHeaders() }),
+      fetch(`${BASE_URL}/movie/${id}/videos?include_video_language=en,hi,ko,ja,zh,es,fr,de,it,pt,ru,null`, { headers: getHeaders() }),
+    ]);
+    const usData = usVideosRes.ok ? await usVideosRes.json() : { results: [] };
+    const mData = mVideosRes.ok ? await mVideosRes.json() : { results: [] };
+    const allUniqueVideos = [...usData.results, ...mData.results].filter(
+      (v, i, a) => a.findIndex((t) => t.key === v.key) === i
+    );
+    details.videos = { results: allUniqueVideos };
+  } catch {
+    details.videos = { results: [] };
+  }
+
+  if (!details.videos?.results) details.videos = { results: [] };
+  return details;
+};
