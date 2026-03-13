@@ -27,11 +27,20 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${inter.className} min-h-screen bg-[#050505] text-gray-100 selection:bg-red-500/30`}>
         <FavoritesProvider>
+          {/* Navbar Suspense */}
           <Suspense fallback={<div className="h-16 bg-black/80" />}>
             <Navbar />
           </Suspense>
+          
           <main className="max-w-[1920px] mx-auto">
-            {children}
+            {/* Global Page Suspense — required for useSearchParams() in Next.js 15 */}
+            <Suspense fallback={
+              <div className="min-h-screen flex items-center justify-center bg-[#050505]">
+                <div className="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin" />
+              </div>
+            }>
+              {children}
+            </Suspense>
           </main>
         </FavoritesProvider>
       </body>
