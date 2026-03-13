@@ -7,14 +7,14 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: {
-    default: 'Cine-Stream — Discover Popular Movies',
-    template: '%s | Cine-Stream',
+    default: 'Movie-Cine — Discover Popular Movies',
+    template: '%s | Movie-Cine',
   },
   description:
-    'Cine-Stream is your ultimate movie discovery platform. Browse popular movies, watch trailers, and save your favorites — powered by TMDB.',
-  keywords: ['movies', 'cinema', 'trailers', 'TMDB', 'popular movies', 'cine-stream'],
+    'Movie-Cine is your ultimate movie discovery platform. Browse popular movies, watch trailers, and save your favorites — powered by TMDB.',
+  keywords: ['movies', 'cinema', 'trailers', 'TMDB', 'popular movies', 'movie-cine'],
   openGraph: {
-    title: 'Cine-Stream — Discover Popular Movies',
+    title: 'Movie-Cine — Discover Popular Movies',
     description: 'Browse popular movies, watch trailers, and save your favorites.',
     type: 'website',
   },

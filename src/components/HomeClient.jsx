@@ -137,7 +137,7 @@ export default function HomeClient({ initialMovies }) {
             TRENDING <span className="text-red-500 text-glow">NOW</span>
           </h1>
           <p className="text-gray-500 font-medium tracking-widest text-[10px] mt-2 uppercase">
-             Top picks from Cine-Stream Global
+             Top picks from Movie-Cine Global
           </p>
         </div>
       ) : (

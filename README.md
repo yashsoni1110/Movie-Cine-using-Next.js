@@ -1,4 +1,4 @@
-# 🎬 Cine-Stream — The Ultimate Movie Discovery Experience
+# 🎬 Movie-Cine — The Ultimate Movie Discovery Experience
 
 [![Deploy with Vercel](https://vercel.com/button)](https://movie-cine-using-next-js-b17d.vercel.app/) 
 
@@ -6,7 +6,7 @@
 
 ![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css)
 
-Cine-Stream is a premium, high-performance movie discovery application built with **Next.js 15**. It leverages **Server-Side Rendering (SSR)** for lightning-fast initial loads and **SEO optimization**, ensuring that movies and their details are easily discoverable by search engines.
+Movie-Cine is a premium, high-performance movie discovery application built with **Next.js 15**. It leverages **Server-Side Rendering (SSR)** for lightning-fast initial loads and **SEO optimization**, ensuring that movies and their details are easily discoverable by search engines.
 
 ---
 

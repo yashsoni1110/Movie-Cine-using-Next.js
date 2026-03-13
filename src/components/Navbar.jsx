@@ -53,7 +53,7 @@ export default function Navbar() {
               MOVIE<span className="text-red-500">CINE</span>
             </span>
             <span className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase leading-none mt-1">
-              Cinema Stream
+              Movie Cine
             </span>
           </div>
         </Link>

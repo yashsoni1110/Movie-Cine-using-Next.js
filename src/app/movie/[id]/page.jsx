@@ -12,9 +12,9 @@ export async function generateMetadata({ params }) {
       title: `${movie.title} (${year})`,
       description: movie.overview
         ? movie.overview.substring(0, 160)
-        : `Watch ${movie.title} on Cine-Stream.`,
+        : `Watch ${movie.title} on Movie-Cine.`,
       openGraph: {
-        title: `${movie.title} | Cine-Stream`,
+        title: `${movie.title} | Movie-Cine`,
         description: movie.overview?.substring(0, 160),
         images: movie.poster_path
           ? [`https://image.tmdb.org/t/p/w500${movie.poster_path}`]
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch {
-    return { title: 'Movie | Cine-Stream' };
+    return { title: 'Movie | Movie-Cine' };
   }
 }
 
@@ -75,7 +75,7 @@ export default async function MovieDetailPage({ params }) {
           </Link>
           <div className="flex flex-col gap-4">
              <div className="flex items-center gap-3">
-                <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Cine Stream Exclusive</span>
+                <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Movie Cine Exclusive</span>
                 <span className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.3em]">{movie.status}</span>
              </div>
              <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl uppercase tracking-tighter max-w-4xl leading-[0.9] text-glow">
