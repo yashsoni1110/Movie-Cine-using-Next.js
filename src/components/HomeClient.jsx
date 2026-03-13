@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MovieCard from '@/components/MovieCard';
 import MovieModal from '@/components/MovieModal';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -9,6 +9,7 @@ import { useFavorites } from '@/hooks/useFavorites';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 export default function HomeClient({ initialMovies }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get('q') || '';
 
@@ -109,10 +110,7 @@ export default function HomeClient({ initialMovies }) {
           </h1>
           <button
             onClick={() => {
-              // Clear search by pushing to home without query param
-              window.history.pushState({}, '', '/');
-              // Manually fire a Next.js router refresh to update searchParams
-              window.dispatchEvent(new Event('popstate'));
+              router.push('/');
             }}
             className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white px-5 py-2 rounded-full font-bold transition-all shadow border border-gray-600"
           >

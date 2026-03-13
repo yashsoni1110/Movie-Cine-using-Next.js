@@ -13,17 +13,25 @@ export default function Navbar() {
 
   // Debounce the search: push to URL after 500ms of no typing
   useEffect(() => {
+    // 🚩 FIX: Don't navigate if the searchQuery matches what's already in the URL
+    // This prevents the "redirect to home on refresh" bug.
+    const currentQ = searchParams.get('q') || '';
+    if (searchQuery === currentQ) return;
+
     const timer = setTimeout(() => {
       const params = new URLSearchParams(searchParams.toString());
       if (searchQuery) {
         params.set('q', searchQuery);
+        router.push(`/?${params.toString()}`);
       } else {
+        // Only clear params if we are already on the home page
+        // If we are on favorites/movie page, don't force-redirect to home on mount
         params.delete('q');
+        router.push(`/?${params.toString()}`);
       }
-      router.push(`/?${params.toString()}`);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, router, searchParams]);
 
   return (
     <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 p-4 w-full">
