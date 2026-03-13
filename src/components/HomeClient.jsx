@@ -51,28 +51,8 @@ export default function HomeClient({ initialMovies }) {
   };
 
   useEffect(() => {
-    const queryChanged = urlQuery !== prevQueryRef.current;
-
-    // Step 1: If query changed, reset list and page, then let activePage=1
-    // trigger the effect again for the actual fetch
-    if (queryChanged) {
-      prevQueryRef.current = urlQuery;
-      setMovies([]);
-      setActivePage(1);
-      setHasMore(true);
-      setError(null);
-      return; // Exit — setting activePage re-triggers this effect
-    }
-
-    // Step 2: No query on page 1 = show SSR popular movies, no fetch needed
-    if (!urlQuery && activePage === 1) {
-      setMovies(initialMovies);
-      setHasMore(true);
-      return;
-    }
-
-    // Step 3: Everything else = client-side fetch (search results, page > 1)
     let active = true;
+    
     const fetchMovies = async () => {
       setLoading(true);
       setError(null);
@@ -88,6 +68,8 @@ export default function HomeClient({ initialMovies }) {
 
         if (active) {
           setMovies((prev) => {
+            // If it's a new search (activePage 1), replace previous list.
+            // Otherwise, append for infinite scroll.
             const combined = activePage === 1 ? data.results : [...prev, ...data.results];
             const seen = new Set();
             return combined.filter((m) => (seen.has(m.id) ? false : seen.add(m.id)));
@@ -101,9 +83,30 @@ export default function HomeClient({ initialMovies }) {
       }
     };
 
-    fetchMovies();
+    // When query changes, reset everything and fetch from page 1
+    if (urlQuery !== prevQueryRef.current) {
+      prevQueryRef.current = urlQuery;
+      setHasMore(true);
+      setMovies([]); // Clear immediately
+      setLoading(true); // Start loading immediately
+      if (activePage === 1) {
+        fetchMovies();
+      } else {
+        // This will trigger the effect again due to activePage change
+        setActivePage(1);
+      }
+    } else {
+      // Normal fetch for page changes or initial load
+      if (!urlQuery && activePage === 1 && movies.length === 0) {
+        setMovies(initialMovies);
+        setLoading(false);
+      } else {
+        fetchMovies();
+      }
+    }
+
     return () => { active = false; };
-  }, [urlQuery, activePage]);
+  }, [urlQuery, activePage, initialMovies]);
 
   // Infinite scroll
   const lastMovieRef = useCallback(
@@ -121,12 +124,22 @@ export default function HomeClient({ initialMovies }) {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="relative min-h-screen pt-24 pb-12 px-4 md:px-8">
+      {/* Ambient background glow */}
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+      <div className="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-red-900/10 rounded-full blur-[100px] pointer-events-none -z-10" />
+
+      <div className="max-w-[1400px] mx-auto">
       {/* Page heading */}
       {!urlQuery ? (
-        <h1 className="text-4xl font-black text-white mb-8 tracking-tight border-l-4 border-red-600 pl-4">
-          Popular Movies
-        </h1>
+        <div className="mb-10 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight uppercase">
+            TRENDING <span className="text-red-500 text-glow">NOW</span>
+          </h1>
+          <p className="text-gray-500 font-medium tracking-widest text-[10px] mt-2 uppercase">
+             Top picks from Cine-Stream Global
+          </p>
+        </div>
       ) : (
         <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl font-bold text-white text-center md:text-left">
@@ -136,9 +149,9 @@ export default function HomeClient({ initialMovies }) {
             onClick={() => {
               router.push('/');
             }}
-            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white px-5 py-2 rounded-full font-bold transition-all shadow border border-gray-600"
+            className="flex items-center gap-2 px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[10px] transition-all border border-white/10 hover:border-red-500/50 group"
           >
-            ← Back to Popular
+            <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Popular
           </button>
         </div>
       )}
@@ -199,6 +212,7 @@ export default function HomeClient({ initialMovies }) {
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
+      </div>
     </div>
   );
 }

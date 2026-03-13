@@ -4,17 +4,20 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaVideo, FaSearch, FaHeart } from 'react-icons/fa';
+import { useFavorites } from '@/hooks/useFavorites';
 
-// "use client" — because we need useState for the search input
 export default function Navbar() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { favorites } = useFavorites();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
 
-  // Debounce the search: push to URL after 500ms of no typing
+  // 🔄 Sync local state with URL (fixes 'Back to Popular' loop)
   useEffect(() => {
-    // 🚩 FIX: Don't navigate if the searchQuery matches what's already in the URL
-    // This prevents the "redirect to home on refresh" bug.
+    setSearchQuery(searchParams.get('q') || '');
+  }, [searchParams]);
+
+  useEffect(() => {
     const currentQ = searchParams.get('q') || '';
     if (searchQuery === currentQ) return;
 
@@ -24,8 +27,6 @@ export default function Navbar() {
         params.set('q', searchQuery);
         router.push(`/?${params.toString()}`);
       } else {
-        // Only clear params if we are already on the home page
-        // If we are on favorites/movie page, don't force-redirect to home on mount
         params.delete('q');
         router.push(`/?${params.toString()}`);
       }
@@ -34,45 +35,49 @@ export default function Navbar() {
   }, [searchQuery, router, searchParams]);
 
   return (
-    <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10 p-4 w-full">
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <nav className="fixed top-0 left-0 right-0 z-[100] px-4 py-3">
+      <div className="max-w-[1400px] mx-auto glass-panel rounded-2xl flex items-center justify-between px-6 py-2.5 shadow-2xl gap-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group select-none transition-transform hover:scale-105">
-          <div className="bg-[#E50914] p-2 rounded-lg shadow-[0_0_15px_rgba(229,9,20,0.6)] group-hover:shadow-[0_0_25px_rgba(229,9,20,0.8)] transition-shadow">
-            <FaVideo className="text-white text-xl" />
+        <Link href="/" className="flex items-center gap-2.5 group active:scale-95 transition-transform flex-shrink-0">
+          <div className="bg-gradient-to-br from-red-500 to-red-700 p-2 rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.3)] group-hover:shadow-[0_0_30px_rgba(239,68,68,0.5)] transition-all">
+            <FaVideo className="text-white text-lg" />
           </div>
-          <div className="flex flex-col -gap-1">
-            <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 uppercase leading-none">
-              MOVIE<span className="text-[#E50914]">CINE</span>
+          <div className="hidden sm:flex flex-col">
+            <span className="text-lg font-black tracking-tight text-white uppercase leading-none">
+              MOVIE<span className="text-red-500">CINE</span>
             </span>
-            <span className="text-[0.6rem] font-bold tracking-[0.3em] text-gray-500 uppercase ml-0.5 mt-0.5">
-              Explore Movies
+            <span className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase leading-none mt-1">
+              Cinema Stream
             </span>
           </div>
         </Link>
 
-        {/* Search Bar — needs useState = Client Component */}
-        <div className="relative w-full md:w-1/2 max-w-lg">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <FaSearch className="text-gray-400" />
+        {/* Search */}
+        <div className="flex-1 max-w-md group">
+          <div className="relative flex items-center">
+            <FaSearch className="absolute left-4 text-gray-400 group-focus-within:text-red-500 transition-colors hidden xs:block" />
+            <input
+              type="text"
+              className="w-full bg-white/5 border border-white/5 rounded-xl py-2 pl-4 xs:pl-11 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:bg-white/10 transition-all placeholder:text-gray-500"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <input
-            type="text"
-            id="movie-search"
-            className="block w-full text-white bg-gray-900 border border-gray-700/50 rounded-full py-2.5 pl-10 pr-4 outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 transition-all shadow-inner"
-            placeholder="Search for movies..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
         </div>
 
         {/* Favorites Link */}
         <Link
           href="/favorites"
-          className="flex items-center gap-2 text-white/80 hover:text-red-400 transition-colors font-semibold group bg-white/5 py-2 px-4 rounded-full border border-white/5 hover:border-red-500/30 hover:bg-red-500/10"
+          className="relative flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 group transition-all text-sm font-bold text-white border border-white/5 flex-shrink-0"
         >
-          <FaHeart className="text-gray-400 group-hover:text-red-500 transition-colors" />
-          My Favorites
+          <FaHeart className="text-red-500 group-hover:scale-110 transition-transform" />
+          <span className="hidden md:inline">Favorites</span>
+          {favorites.length > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#050505] animate-in zoom-in duration-300">
+              {favorites.length}
+            </span>
+          )}
         </Link>
       </div>
     </nav>

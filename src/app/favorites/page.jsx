@@ -39,49 +39,70 @@ export default function FavoritesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 min-h-screen">
-      <div className="flex items-center gap-3 mb-10 border-b border-gray-800 pb-4 flex-wrap">
-        <Link
-          href="/"
-          className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-gray-200 hover:text-white px-4 py-2 rounded-full text-sm font-bold transition-all border border-gray-600 mr-2"
-        >
-          ← Back
-        </Link>
-        <FaHeart className="text-red-500 text-3xl hidden sm:block" />
-        <h1 className="text-3xl sm:text-4xl font-black text-white tracking-wide">My Favorites</h1>
-        <span className="ml-auto bg-red-600/20 text-red-400 py-1 px-3 rounded-full text-sm font-bold border border-red-500/30">
-          {favorites.length} Saved
-        </span>
-      </div>
+    <div className="relative min-h-screen pt-32 pb-12 px-4 md:px-8">
+      {/* Ambient background glow */}
+      <div className="fixed top-0 left-1/3 w-[500px] h-[500px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+      
+      <div className="max-w-[1400px] mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left">
+            <Link
+              href="/"
+              className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest mb-4 outline-none"
+            >
+              <span className="group-hover:-translate-x-1 transition-transform inline-block">←</span> 
+              Back to Home
+            </Link>
+            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight uppercase">
+              MY <span className="text-red-500 text-glow">FAVORITES</span>
+            </h1>
+            <p className="text-gray-500 font-medium tracking-widest text-[10px] mt-2 uppercase">
+               Your personally curated collection — {favorites.length} {favorites.length === 1 ? 'Movie' : 'Movies'}
+            </p>
+          </div>
 
-      {favorites.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-gray-900/50 rounded-2xl border border-gray-800/50 backdrop-blur-sm">
-          <FaFilm className="text-gray-700 text-6xl mb-4" />
-          <h2 className="text-2xl font-bold text-gray-300 mb-2">Your favorites list is empty</h2>
-          <p className="text-gray-500 mb-6 text-center max-w-md">
-            Start adding movies to your favorites by clicking the heart icon on any movie card.
-          </p>
-          <Link
-            href="/"
-            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-bold transition-all shadow-lg hover:shadow-red-500/25"
-          >
-            Discover Movies
-          </Link>
+          <div className="flex items-center gap-3 glass-panel px-6 py-3 rounded-2xl shadow-xl">
+             <FaHeart className="text-red-500 animate-pulse" />
+             <span className="text-white font-bold text-lg">{favorites.length}</span>
+             <span className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Saved</span>
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-          {favorites.map((movie) => (
-            <div key={movie.id} className="animate-[fade-in-up_0.6s_ease-out_forwards]">
-                <MovieCard
-                  movie={movie}
-                  isFavorite={isFavorite(movie.id)}
-                  onToggleFavorite={toggleFavorite}
-                  onMovieClick={handleMovieClick}
-                />
-            </div>
-          ))}
-        </div>
-      )}
+
+        {favorites.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-32 glass-panel rounded-3xl border border-white/5 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-b from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            <FaFilm className="text-gray-800 text-8xl mb-6 transform group-hover:scale-110 transition-transform duration-500" />
+            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Your list is empty</h2>
+            <p className="text-gray-500 mb-10 text-center max-w-sm font-medium leading-relaxed">
+              Every great journey starts with a single movie. Find your next favorite.
+            </p>
+            <Link
+              href="/"
+              className="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(229,9,20,0.3)] hover:shadow-[0_15px_40px_rgba(229,9,20,0.5)] hover:-translate-y-1 active:translate-y-0"
+            >
+              Explore Now
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
+            {favorites.map((movie, index) => (
+              <div 
+                key={movie.id} 
+                className="animate-[fade-in-up_0.6s_ease-out_forwards]"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                  <MovieCard
+                    movie={movie}
+                    isFavorite={isFavorite(movie.id)}
+                    onToggleFavorite={toggleFavorite}
+                    onMovieClick={handleMovieClick}
+                  />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {selectedMovie && (
         <MovieModal movie={selectedMovie} onClose={handleCloseModal} />

@@ -35,9 +35,9 @@ export default async function MovieDetailPage({ params }) {
     movie = await fetchMovieDetails(id);
   } catch {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="container mx-auto px-4 py-32 text-center pt-40">
         <p className="text-red-400 text-xl font-bold">Failed to load movie details.</p>
-        <Link href="/" className="mt-4 inline-block text-gray-400 hover:text-white underline">
+        <Link href="/" className="mt-4 inline-block text-gray-400 hover:text-white underline font-bold uppercase tracking-widest text-xs">
           ← Back to home
         </Link>
       </div>
@@ -50,75 +50,93 @@ export default async function MovieDetailPage({ params }) {
   const cast = movie.credits?.cast?.slice(0, 8) || [];
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
+      {/* Ambient glass glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-full h-[50vh] bg-gradient-to-b from-red-600/10 via-transparent to-transparent pointer-events-none -z-10" />
+
       {/* Hero Backdrop */}
-      <div className="relative w-full h-[55vh] bg-[#111] overflow-hidden">
+      <div className="relative w-full h-[65vh] bg-[#050505] overflow-hidden">
         {(movie.backdrop_path || movie.poster_path) && (
           <Image
             src={`https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`}
             alt={movie.title}
             fill
-            className="object-cover opacity-40"
+            className="object-cover opacity-30 scale-105 blur-[2px]"
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1014] via-[#0f1014]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#050505] to-transparent" />
 
-        <div className="absolute bottom-8 left-0 w-full px-6 md:px-16">
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors text-sm font-semibold">
-            ← Back to Popular
+        <div className="absolute bottom-12 left-0 w-full px-6 md:px-16 z-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors text-xs font-black uppercase tracking-widest group">
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            Back to Home
           </Link>
-          <h1 className="text-4xl md:text-6xl font-black text-white drop-shadow-2xl uppercase tracking-tighter" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.9)' }}>
-            {movie.title}
-          </h1>
-          <div className="flex flex-wrap gap-2 mt-3">
-            <span className="bg-[#E50914] text-white px-3 py-1 rounded text-sm font-bold">
-              ★ {movie.vote_average?.toFixed(1)}
-            </span>
-            <span className="bg-[#404040] text-white px-3 py-1 rounded text-sm font-bold">
-              {movie.release_date?.substring(0, 4)}
-            </span>
-            {movie.genres?.slice(0, 3).map((g) => (
-              <span key={g.id} className="bg-white/10 backdrop-blur-sm text-white px-3 py-1 rounded text-sm font-bold border border-white/10">
-                {g.name}
-              </span>
-            ))}
+          <div className="flex flex-col gap-4">
+             <div className="flex items-center gap-3">
+                <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">Cine Stream Exclusive</span>
+                <span className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.3em]">{movie.status}</span>
+             </div>
+             <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl uppercase tracking-tighter max-w-4xl leading-[0.9] text-glow">
+                {movie.title}
+             </h1>
+             <div className="flex flex-wrap items-center gap-4 mt-2">
+                <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md shadow-xl">
+                   <span className="text-yellow-500 font-black tracking-tighter">★</span>
+                   <span className="text-white text-sm font-bold">{movie.vote_average?.toFixed(1)}</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md text-white text-sm font-bold uppercase tracking-widest shadow-xl">
+                   {movie.release_date?.substring(0, 4)}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                   {movie.genres?.slice(0, 3).map((g) => (
+                      <span key={g.id} className="text-[10px] font-black uppercase tracking-widest text-gray-400 border border-white/10 px-2 py-1 rounded-lg">
+                         {g.name}
+                      </span>
+                   ))}
+                </div>
+             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 md:px-16 py-10 grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-16 grid grid-cols-1 lg:grid-cols-12 gap-12 -mt-10 relative z-20">
         {/* Left: Poster */}
-        <div className="md:col-span-1 flex justify-center md:justify-start">
-          <div className="relative w-64 md:w-full max-w-xs rounded-xl overflow-hidden shadow-2xl border border-white/10">
+        <div className="lg:col-span-4 self-start sticky top-32">
+          <div className="relative aspect-[2/3] w-full max-w-sm mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/5 group">
             {movie.poster_path ? (
               <Image
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 width={500}
                 height={750}
-                className="w-full"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
             ) : (
-              <div className="aspect-[2/3] bg-gray-800 flex items-center justify-center">
-                <span className="text-gray-500 text-sm">No Poster</span>
+              <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                <span className="text-gray-500 text-xs font-black uppercase tracking-widest">No Poster Available</span>
               </div>
             )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
           </div>
         </div>
 
         {/* Right: Details */}
-        <div className="md:col-span-2">
-          <p className="text-[#e5e5e5] text-base md:text-lg leading-relaxed mb-8">
-            {movie.overview || 'No overview available.'}
-          </p>
+        <div className="lg:col-span-8 flex flex-col gap-10">
+          <div className="glass-panel p-8 rounded-3xl border border-white/5 shadow-2xl">
+              <h2 className="text-xs font-black text-red-500 uppercase tracking-[0.3em] mb-4">Storyline</h2>
+              <p className="text-gray-300 text-base md:text-lg leading-relaxed font-medium">
+                {movie.overview || 'The plot details for this cinema piece are currently being curated.'}
+              </p>
+          </div>
 
           {/* Trailer */}
           {mainTrailer && (
-            <div className="mb-8">
-              <h2 className="text-white font-bold text-xl mb-4">Official Trailer</h2>
-              <div className="aspect-video w-full rounded-xl overflow-hidden shadow-xl">
+            <div className="flex flex-col gap-4">
+              <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Cinematic Premiere</h2>
+              <div className="aspect-video w-full rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-gray-900 relative group">
                 <iframe
                   className="w-full h-full"
                   src={`https://www.youtube-nocookie.com/embed/${mainTrailer.key}?controls=1&modestbranding=1&rel=0`}
@@ -133,28 +151,28 @@ export default async function MovieDetailPage({ params }) {
 
           {/* Cast */}
           {cast.length > 0 && (
-            <div>
-              <h2 className="text-white font-bold text-xl mb-4">Cast</h2>
-              <div className="flex gap-4 overflow-x-auto pb-2">
+            <div className="flex flex-col gap-6">
+              <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Featured Artists</h2>
+              <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
                 {cast.map((person) => (
-                  <div key={person.id} className="min-w-[90px] text-center">
-                    <div className="w-16 h-16 mx-auto rounded-full overflow-hidden bg-gray-800 mb-1 border border-white/10">
+                  <div key={person.id} className="min-w-[120px] text-center group">
+                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden bg-white/5 mb-3 border border-white/10 group-hover:border-red-500 group-hover:scale-110 transition-all duration-300 shadow-xl">
                       {person.profile_path ? (
                         <Image
                           src={`https://image.tmdb.org/t/p/w185${person.profile_path}`}
                           alt={person.name}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
+                          width={120}
+                          height={120}
+                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-2xl">
+                        <div className="w-full h-full flex items-center justify-center text-gray-600 text-3xl">
                           👤
                         </div>
                       )}
                     </div>
-                    <p className="text-white text-xs font-bold leading-tight line-clamp-2">{person.name}</p>
-                    <p className="text-gray-500 text-xs line-clamp-1">{person.character}</p>
+                    <p className="text-white text-xs font-black leading-tight line-clamp-2 uppercase tracking-tighter mb-1">{person.name}</p>
+                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest line-clamp-1">{person.character}</p>
                   </div>
                 ))}
               </div>
