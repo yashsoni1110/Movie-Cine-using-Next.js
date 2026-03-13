@@ -77,12 +77,12 @@ export default function FavoritesPage() {
             <p className="text-gray-500 mb-10 text-center max-w-sm font-medium leading-relaxed">
               Every great journey starts with a single movie. Find your next favorite.
             </p>
-            <Link
-              href="/"
-              className="bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(229,9,20,0.3)] hover:shadow-[0_15px_40px_rgba(229,9,20,0.5)] hover:-translate-y-1 active:translate-y-0"
+            <button
+              onClick={() => router.push('/')}
+              className="relative z-10 bg-red-600 hover:bg-red-700 text-white px-10 py-4 rounded-full font-black uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(229,9,20,0.3)] hover:shadow-[0_15px_40px_rgba(229,9,20,0.5)] hover:-translate-y-1 active:translate-y-0 cursor-pointer"
             >
               Explore Now
-            </Link>
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">

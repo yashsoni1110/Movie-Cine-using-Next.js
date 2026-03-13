@@ -46,7 +46,7 @@ export function FavoritesProvider({ children }) {
   const isFavorite = (movieId) => favorites.some((m) => m.id === movieId);
 
   return (
-    <FavoritesContext.Provider value={{ favorites, toggleFavorite, isFavorite }}>
+    <FavoritesContext.Provider value={{ favorites, toggleFavorite, isFavorite, isHydrated }}>
       {children}
     </FavoritesContext.Provider>
   );

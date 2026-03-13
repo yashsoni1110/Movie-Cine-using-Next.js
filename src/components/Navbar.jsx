@@ -11,11 +11,17 @@ export default function Navbar() {
   const searchParams = useSearchParams();
   const { favorites } = useFavorites();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [mounted, setMounted] = useState(false);
 
-  // 🔄 Sync local state with URL (fixes 'Back to Popular' loop)
+  // 🔄 Sync local state with URL
   useEffect(() => {
     setSearchQuery(searchParams.get('q') || '');
   }, [searchParams]);
+
+  // Handle mounting to prevent hydration errors
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const currentQ = searchParams.get('q') || '';
@@ -73,7 +79,7 @@ export default function Navbar() {
         >
           <FaHeart className="text-red-500 group-hover:scale-110 transition-transform" />
           <span className="hidden md:inline">Favorites</span>
-          {favorites.length > 0 && (
+          {mounted && favorites.length > 0 && (
             <span className="absolute -top-1.5 -right-1.5 bg-red-600 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#050505] animate-in zoom-in duration-300">
               {favorites.length}
             </span>
