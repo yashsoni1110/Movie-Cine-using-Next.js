@@ -54,3 +54,13 @@ export const fetchMovieDetails = async (id) => {
   if (!details.videos?.results) details.videos = { results: [] };
   return details;
 };
+
+export const fetchGenres = async () => {
+  const response = await fetch(`${BASE_URL}/genre/movie/list?language=en-US`, {
+    headers: getHeaders(),
+    next: { revalidate: 86400 }, // Cache genres for 24 hours
+  });
+  if (!response.ok) throw new Error('Failed to fetch genres');
+  const data = await response.json();
+  return data.genres || [];
+};

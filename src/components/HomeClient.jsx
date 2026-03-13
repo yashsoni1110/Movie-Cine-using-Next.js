@@ -151,7 +151,7 @@ export default function HomeClient({ initialMovies }) {
             }}
             className="flex items-center gap-2 px-6 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[10px] transition-all border border-white/10 hover:border-red-500/50 group"
           >
-            <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Popular
+            <span className="group-hover:-translate-x-1 transition-transform">←</span> Back to Home
           </button>
         </div>
       )}
