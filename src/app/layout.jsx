@@ -24,7 +24,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} min-h-screen bg-[#0f1014] text-gray-100 selection:bg-red-500/30`}>
-        <Navbar />
+        <Suspense fallback={<div className="h-16 bg-black/80" />}>
+          <Navbar />
+        </Suspense>
         <main className="max-w-[1920px] mx-auto">
           {children}
         </main>
