@@ -5,12 +5,38 @@ import { FaHeart, FaFilm } from 'react-icons/fa';
 import MovieCard from '@/components/MovieCard';
 import MovieModal from '@/components/MovieModal';
 import { useFavorites } from '@/hooks/useFavorites';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // "use client" — reads localStorage for favorites
 export default function FavoritesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { favorites, isFavorite, toggleFavorite } = useFavorites();
   const [selectedMovie, setSelectedMovie] = useState(null);
+
+  // 🔄 Persistent Modal: Watch URL params for 'movie=ID'
+  useEffect(() => {
+    const movieId = searchParams.get('movie');
+    if (movieId) {
+      const existing = favorites.find(m => String(m.id) === String(movieId));
+      setSelectedMovie(existing || { id: movieId });
+    } else {
+      setSelectedMovie(null);
+    }
+  }, [searchParams, favorites]);
+
+  const handleMovieClick = (movie) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('movie', movie.id);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleCloseModal = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('movie');
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -46,19 +72,19 @@ export default function FavoritesPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {favorites.map((movie) => (
             <div key={movie.id} className="animate-[fade-in-up_0.6s_ease-out_forwards]">
-              <MovieCard
-                movie={movie}
-                isFavorite={isFavorite(movie.id)}
-                onToggleFavorite={toggleFavorite}
-                onMovieClick={setSelectedMovie}
-              />
+                <MovieCard
+                  movie={movie}
+                  isFavorite={isFavorite(movie.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onMovieClick={handleMovieClick}
+                />
             </div>
           ))}
         </div>
       )}
 
       {selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+        <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
     </div>
   );

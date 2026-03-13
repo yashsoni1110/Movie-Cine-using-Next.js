@@ -24,7 +24,31 @@ export default function HomeClient({ initialMovies }) {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const { isFavorite, toggleFavorite } = useFavorites();
   const observer = useRef();
-  const prevQueryRef = useRef(urlQuery); // Track previous URL query
+  const prevQueryRef = useRef(urlQuery);
+
+  // 🔄 Persistent Modal: Watch URL params for 'movie=ID'
+  useEffect(() => {
+    const movieId = searchParams.get('movie');
+    if (movieId) {
+      // Find in current list if possible, else use dummy with ID
+      const existing = movies.find(m => String(m.id) === String(movieId));
+      setSelectedMovie(existing || { id: movieId });
+    } else {
+      setSelectedMovie(null);
+    }
+  }, [searchParams, movies]);
+
+  const handleMovieClick = (movie) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('movie', movie.id);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  const handleCloseModal = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('movie');
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   useEffect(() => {
     const queryChanged = urlQuery !== prevQueryRef.current;
@@ -142,7 +166,7 @@ export default function HomeClient({ initialMovies }) {
                   movie={movie}
                   isFavorite={isFavorite(movie.id)}
                   onToggleFavorite={toggleFavorite}
-                  onMovieClick={setSelectedMovie}
+                  onMovieClick={handleMovieClick}
                 />
               </div>
             );
@@ -173,7 +197,7 @@ export default function HomeClient({ initialMovies }) {
 
       {/* Modal */}
       {selectedMovie && (
-        <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
+        <MovieModal movie={selectedMovie} onClose={handleCloseModal} />
       )}
     </div>
   );

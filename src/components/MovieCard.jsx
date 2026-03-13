@@ -7,6 +7,11 @@ export default function MovieCard({ movie, isFavorite, onToggleFavorite, onMovie
   return (
     <div
       onClick={() => onMovieClick && onMovieClick(movie)}
+      onMouseEnter={() => {
+        // Prefetch movie details in background to speed up modal load
+        const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+        fetch(`https://api.themoviedb.org/3/movie/${movie.id}?api_key=${API_KEY}&append_to_response=videos`).catch(() => {});
+      }}
       className="relative group rounded-xl overflow-hidden bg-gray-800 shadow-lg transition-transform duration-300 hover:scale-[1.03] hover:shadow-2xl flex flex-col h-full cursor-pointer"
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden bg-[#111]">
