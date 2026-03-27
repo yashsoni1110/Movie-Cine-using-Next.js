@@ -44,6 +44,29 @@ Movie-Cine is a premium, high-performance movie discovery application built with
 
 ---
 
+## 🧪 Testing Architecture
+
+This project implements a robust automated testing suite to ensure UI reliability and prevent regressions. It utilizes **Jest** as the test runner and **React Testing Library (RTL)** for component rendering in a simulated JSDOM environment.
+
+Key testing features include:
+- **Simulated User Interactions**: Utilizing `@testing-library/user-event` to type in search bars and click buttons exactly as a user would.
+- **RTL Selection Queries**: Robust element selection using accessibilty-first queries (`getByRole`, `getByText`).
+- **Next.js Router Mocking**: Full mocking of `next/navigation` hooks (`useRouter`, `useSearchParams`) to test navigation-dependent components like the Navbar.
+- **API Fetch Mocking**: Intercepting and mocking global `fetch` requests (e.g., TMDB API calls on movie card hover) to ensure tests do not rely on external networks.
+- **State Provider Wrapping**: Injecting global React Context (`FavoritesProvider`) directly into the testing tree to verify state-dependent UI.
+- **Coverage Reporting**: Configured V8 coverage tracking to measure tested lines of code across all components.
+
+To run the test suite:
+```bash
+# Run all tests
+npm run test
+
+# Run tests with detailed coverage report
+npm run test:coverage
+```
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Clone the repository
