@@ -44,9 +44,10 @@ export default async function MovieDetailPage({ params }) {
     );
   }
 
-  const mainTrailer = movie.videos?.results?.find(
-    (v) => v.site === 'YouTube' && v.type === 'Trailer'
-  ) || movie.videos?.results?.find((v) => v.site === 'YouTube');
+  const mainTrailer = 
+    movie.videos?.results?.find((v) => v.type === 'Trailer' && v.site === 'YouTube') ||
+    movie.videos?.results?.find((v) => v.type === 'Teaser' && v.site === 'YouTube') ||
+    movie.videos?.results?.find((v) => v.site === 'YouTube');
   const cast = movie.credits?.cast?.slice(0, 8) || [];
 
   return (
@@ -133,10 +134,10 @@ export default async function MovieDetailPage({ params }) {
           </div>
 
           {/* Trailer */}
-          {mainTrailer && (
-            <div className="flex flex-col gap-4">
-              <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Cinematic Premiere</h2>
-              <div className="aspect-video w-full rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-gray-900 relative group">
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Cinematic Premiere</h2>
+            <div className="aspect-video w-full rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-gray-900 relative group">
+              {mainTrailer ? (
                 <iframe
                   className="w-full h-full"
                   src={`https://www.youtube-nocookie.com/embed/${mainTrailer.key}?controls=1&modestbranding=1&rel=0`}
@@ -145,9 +146,38 @@ export default async function MovieDetailPage({ params }) {
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 />
-              </div>
+              ) : (
+                <div className="w-full h-full relative">
+                  <Image
+                    src={`https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path}`}
+                    alt={movie.title}
+                    fill
+                    className="object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-6">
+                    <div className="w-20 h-20 bg-[#E50914] rounded-full flex items-center justify-center shadow-2xl transition-transform group-hover:scale-110">
+                       <svg className="w-10 h-10 text-white ml-2" fill="currentColor" viewBox="0 0 24 24">
+                         <path d="M8 5v14l11-7z" />
+                       </svg>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white text-2xl font-black uppercase tracking-tighter mb-2">Watch Official Trailer</p>
+                      <a
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
+                          movie.title + ' ' + (movie.release_date?.substring(0, 4) || '') + ' official trailer'
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block bg-white text-black px-8 py-3 rounded-full font-black text-sm uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-2xl"
+                      >
+                        Search on YouTube
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Cast */}
           {cast.length > 0 && (

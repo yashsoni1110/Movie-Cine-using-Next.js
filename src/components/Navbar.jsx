@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaVideo, FaSearch, FaHeart } from 'react-icons/fa';
 import { useFavorites } from '@/hooks/useFavorites';
+import Search from '@/components/Search';
 
 export default function Navbar() {
   const router = useRouter();
@@ -62,12 +63,10 @@ export default function Navbar() {
         <div className="flex-1 max-w-md group">
           <div className="relative flex items-center">
             <FaSearch className="absolute left-4 text-gray-400 group-focus-within:text-red-500 transition-colors hidden xs:block" />
-            <input
-              type="text"
-              className="w-full bg-white/5 border border-white/5 rounded-xl py-2 pl-4 xs:pl-11 pr-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:bg-white/10 transition-all placeholder:text-gray-500"
+            <Search
               placeholder="Search movies..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={setSearchQuery}
             />
           </div>
         </div>

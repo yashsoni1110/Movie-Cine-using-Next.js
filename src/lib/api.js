@@ -37,16 +37,12 @@ export const fetchMovieDetails = async (id) => {
   const details = await detailsRes.json();
 
   try {
-    const [usVideosRes, mVideosRes] = await Promise.all([
-      fetch(`${BASE_URL}/movie/${id}/videos?language=en-US`, { headers: getHeaders() }),
-      fetch(`${BASE_URL}/movie/${id}/videos?include_video_language=en,hi,ko,ja,zh,es,fr,de,it,pt,ru,null`, { headers: getHeaders() }),
-    ]);
-    const usData = usVideosRes.ok ? await usVideosRes.json() : { results: [] };
-    const mData = mVideosRes.ok ? await mVideosRes.json() : { results: [] };
-    const allUniqueVideos = [...usData.results, ...mData.results].filter(
-      (v, i, a) => a.findIndex((t) => t.key === v.key) === i
+    const videoRes = await fetch(
+      `${BASE_URL}/movie/${id}/videos?include_video_language=en,hi,ko,ja,zh,es,fr,de,it,pt,ru,null`,
+      { headers: getHeaders() }
     );
-    details.videos = { results: allUniqueVideos };
+    const videoData = videoRes.ok ? await videoRes.json() : { results: [] };
+    details.videos = videoData;
   } catch {
     details.videos = { results: [] };
   }

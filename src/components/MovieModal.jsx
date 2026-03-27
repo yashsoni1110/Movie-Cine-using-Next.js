@@ -24,16 +24,13 @@ export default function MovieModal({ movie, onClose }) {
         if (!detailsRes.ok) throw new Error('Failed to load movie details');
         const data = await detailsRes.json();
 
-        const [usVidRes, mVidRes] = await Promise.all([
-          fetch(`${BASE_URL}/movie/${movie.id}/videos?api_key=${API_KEY}&language=en-US`),
-          fetch(`${BASE_URL}/movie/${movie.id}/videos?api_key=${API_KEY}&include_video_language=en,hi,ko,ja`),
-        ]);
-        const usData = usVidRes.ok ? await usVidRes.json() : { results: [] };
-        const mData = mVidRes.ok ? await mVidRes.json() : { results: [] };
-        const unique = [...usData.results, ...mData.results].filter(
-          (v, i, a) => a.findIndex((t) => t.key === v.key) === i
+        // Comprehensive fetch for videos in multiple languages to increase chances of finding a trailer
+        const vidRes = await fetch(
+          `${BASE_URL}/movie/${movie.id}/videos?api_key=${API_KEY}&include_video_language=en,hi,ko,ja,fr,de,es,it`
         );
-        data.videos = { results: unique };
+        const vidData = vidRes.ok ? await vidRes.json() : { results: [] };
+        
+        data.videos = vidData;
         setDetails(data);
       } catch (err) {
         setError(err.message);
@@ -48,8 +45,8 @@ export default function MovieModal({ movie, onClose }) {
 
   const videos = details?.videos?.results || [];
   const mainTrailer =
-    videos.find((v) => v.site === 'YouTube' && v.type === 'Trailer') ||
-    videos.find((v) => v.site === 'YouTube' && v.type === 'Teaser') ||
+    videos.find((v) => v.type === 'Trailer' && v.site === 'YouTube') ||
+    videos.find((v) => v.type === 'Teaser' && v.site === 'YouTube') ||
     videos.find((v) => v.site === 'YouTube');
   const allTrailers = videos.filter((v) => v.site === 'YouTube');
 
@@ -86,27 +83,37 @@ export default function MovieModal({ movie, onClose }) {
                 />
               ) : (
                 <div
-                  className="w-full h-full bg-[#111] flex flex-col justify-center items-center rounded-t-xl"
+                  className="w-full h-full bg-[#111] flex flex-col justify-center items-center rounded-t-xl relative group"
                   style={{
                     backgroundImage: `url(https://image.tmdb.org/t/p/original${details.backdrop_path || details.poster_path})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                   }}
                 >
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="relative z-10 flex flex-col items-center gap-3">
-                    <span className="text-gray-300 font-bold tracking-widest uppercase">
-                      No Official Trailer Found
-                    </span>
+                  <div className="absolute inset-0 bg-black/60 transition-colors group-hover:bg-black/40" />
+                  <div className="relative z-10 flex flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-[#E50914] rounded-full flex items-center justify-center shadow-2xl transition-transform group-hover:scale-110">
+                       <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                         <path d="M8 5v14l11-7z" />
+                       </svg>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-white font-black text-xl tracking-tight uppercase block mb-1">
+                        Watch Official Trailer
+                      </span>
+                      <span className="text-gray-300 text-xs font-bold tracking-[0.2em] uppercase">
+                        Available on YouTube
+                      </span>
+                    </div>
                     <a
                       href={`https://www.youtube.com/results?search_query=${encodeURIComponent(
                         details.title + ' ' + (details.release_date?.substring(0, 4) || '') + ' official trailer'
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-[#E50914] hover:bg-[#b80710] text-white px-5 py-2 rounded-full font-bold transition-transform hover:scale-105 shadow-xl flex items-center gap-2"
+                      className="mt-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/20 text-white px-6 py-2.5 rounded-full font-black text-xs uppercase tracking-widest transition-all shadow-xl"
                     >
-                      Search on YouTube
+                      Search YouTube
                     </a>
                   </div>
                 </div>
