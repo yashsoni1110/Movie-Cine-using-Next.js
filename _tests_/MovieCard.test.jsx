@@ -17,3 +17,25 @@ test('renders movie title, rating and year', () => {
   expect(screen.getByText('8.5')).toBeInTheDocument()
   expect(screen.getByText('2020')).toBeInTheDocument()
 })
+
+import userEvent from '@testing-library/user-event';
+
+test('triggers a fetch request on hover (API Mocking)', async () => {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ videos: { results: [] } }),
+    })
+  );
+
+  const mockMovie = { id: 550, title: 'Fight Club' };
+  
+  render(<MovieCard movie={mockMovie} onToggleFavorite={() => {}} />);
+
+  const heading = screen.getByRole('heading', { name: /Fight Club/i });
+  await userEvent.hover(heading.parentElement);
+
+  expect(global.fetch).toHaveBeenCalled();
+  
+  jest.clearAllMocks();
+});
